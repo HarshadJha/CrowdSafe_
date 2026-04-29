@@ -11,10 +11,11 @@ An AI-powered dashboard for real-time crowd detection, counting, and alerting us
 ## 📋 Features
 
 * **Live Video Analysis**: Processes a video stream to detect and count people in real-time.
-* **IoT Sensor Simulation**: Simulates data from entry/exit sensors for a comprehensive view.
-* **Real-Time Statistics**: Displays the current crowd count, density status (Low, Moderate, High), and total people detected.
-* **Incident Management**: Automatically detects high-density events and creates an incident.
-* **SMS Alert System**: Instantly dispatches alerts to authorities via Twilio when a high-density incident is detected.
+* **Mobile Camera Support**: Seamlessly connect your smartphone camera via IP Webcam for flexible live monitoring.
+* **Incident Management System**: Track, acknowledge, and resolve high-density events directly from the dashboard, featuring auto-escalation for unanswered alerts.
+* **Advanced Analytics**: Features Zone Density Analysis (Left, Center, Right) and Rapid Surge Detection.
+* **Real-Time Statistics**: Displays the current crowd count, density status (Safe, Moderate, High, Critical), and total people detected.
+* **Email Alert System**: Instantly dispatches email alerts to authorities when a high-density incident is detected or escalated.
 * **Firebase Integration**: Pushes real-time crowd data to a Firebase Realtime Database.
 * **Configurable Controls**: Easily adjust detection confidence, cluster size, and alert thresholds from the sidebar.
 
@@ -25,8 +26,9 @@ An AI-powered dashboard for real-time crowd detection, counting, and alerting us
 * **Dashboard**: Streamlit
 * **AI/Detection**: YOLOv8, PyTorch, OpenCV
 * **Backend & Database**: Firebase Realtime Database
-* **Alerting**: Twilio SMS API
+* **Alerting**: SMTP Email Integration
 * **Data Handling**: Pandas, NumPy
+* **Mobile Integration**: IP Webcam App
 
 ---
 
@@ -83,18 +85,15 @@ VIDEO_PATH="local_train.mp4"
 FIREBASE_KEY_PATH="firebase-credentials.json"
 
 # Your Firebase Realtime Database URL
-FIREBASE_DB_URL="[https://your-project-id.firebaseio.com](https://your-project-id.firebaseio.com)"
+FIREBASE_DB_URL="https://your-project-id.firebaseio.com"
 
-# Twilio Credentials
-TWILIO_ACCOUNT_SID="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-TWILIO_AUTH_TOKEN="your_twilio_auth_token"
-TWILIO_PHONE_NUMBER="+15017122661"
+# Email Configuration
+EMAIL_SENDER="your_sender_email@gmail.com"
+EMAIL_PASSWORD="your_app_password"
+EMAIL_RECEIVER="authority_receiver@email.com"
 
 # General Configuration
 LOCATION_NAME="Your Location Name"
-
-# List of authority phone numbers to alert, separated by commas
-AUTHORITY_NUMBERS="+11234567890,+10987654321"
 ```
 **Important:** The `.gitignore` file in this repository is configured to ignore the `.env` file, so your secrets will not be committed.
 
@@ -119,14 +118,12 @@ The application will open in a new tab in your web browser.
 
 ## 📊 Data Flow
 
-The system processes data from two main sources and channels it to the dashboard and alert systems via Firebase.
+The system processes data from various sources and channels it to the dashboard and alert systems via Firebase.
 
-```
-CCTV Video → YOLOv8 → People Count → Firebase
-                                        ↓
-IoT Sensors → Entry/Exit Events → Firebase
-                                        ↓
-Firebase → Real-time Updates → Dashboard
-                                        ↓
-High Crowd → Alert System → Twilio SMS
+```text
+CCTV / Mobile Camera → YOLOv8 → People Count → Firebase
+                                                 ↓
+Firebase ← Real-time Updates ← Dashboard
+                                 ↓
+High Crowd / Escalation → Incident Management → Email Alert
 ```
