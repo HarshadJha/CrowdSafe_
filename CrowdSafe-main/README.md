@@ -1,124 +1,168 @@
 # CrowdSafe: Real-Time Crowd Monitoring Dashboard
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.25%2B-red.svg)](https://streamlit.io)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.35-red.svg)](https://streamlit.io)
+[![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-purple.svg)](https://docs.ultralytics.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-An AI-powered dashboard for real-time crowd detection, counting, and alerting using YOLOv8 and Streamlit.
+An AI-powered real-time crowd detection, density analysis, and alerting dashboard built with **YOLOv8**, **Streamlit**, **Firebase**, and **SMTP**.
 
 ---
 
 ## 📋 Features
 
-* **Live Video Analysis**: Processes a video stream to detect and count people in real-time.
-* **Mobile Camera Support**: Seamlessly connect your smartphone camera via IP Webcam for flexible live monitoring.
-* **Incident Management System**: Track, acknowledge, and resolve high-density events directly from the dashboard, featuring auto-escalation for unanswered alerts.
-* **Advanced Analytics**: Features Zone Density Analysis (Left, Center, Right) and Rapid Surge Detection.
-* **Real-Time Statistics**: Displays the current crowd count, density status (Safe, Moderate, High, Critical), and total people detected.
-* **Email Alert System**: Instantly dispatches email alerts to authorities when a high-density incident is detected or escalated.
-* **Firebase Integration**: Pushes real-time crowd data to a Firebase Realtime Database.
-* **Configurable Controls**: Easily adjust detection confidence, cluster size, and alert thresholds from the sidebar.
+| Feature | Description |
+|---|---|
+| **YOLO Person Detection** | Real-time person detection using YOLOv8 on video streams |
+| **Mobile Camera Support** | Connect your smartphone via IP Webcam for live monitoring |
+| **Crowd Density Analysis** | Proximity-based clustering to identify dense zones |
+| **Zone Analysis** | Frame split into Left / Center / Right zones with per-zone counts |
+| **Surge Detection** | Alerts when crowd count rises rapidly over a sliding window |
+| **Heatmap Overlay** | JET-coloured density heatmap rendered on the live feed |
+| **Incident Management** | Create, acknowledge, resolve, and escalate incidents |
+| **Email Alerts** | Automatic SMTP alerts with escalation on no-ACK |
+| **Firebase Integration** | Push real-time status to Firebase Realtime Database |
+| **Logging System** | Rotating file + console logs under `data/logs/` |
+
+---
+
+## 🏗️ Project Structure
+
+```
+CrowdSafe/
+│
+├── app/                          # Main application logic
+│   ├── main.py                  # Entry point (Streamlit app)
+│   ├── config.py                # Centralised config & env loading
+│   ├── utils/                   # Helper functions
+│   │   ├── email_alert.py       # Async email dispatcher
+│   │   ├── video_utils.py       # Video capture factory
+│   │   ├── detection_utils.py   # Heatmap & bounding-box helpers
+│   │   └── logging_utils.py     # Rotating-file logger
+│   │
+│   ├── modules/                 # Core system modules
+│   │   ├── detection.py         # YOLOv8 model loading & inference
+│   │   ├── crowd_analysis.py    # Density, zones, alerts, surge
+│   │   ├── alert_system.py      # Email alert composition
+│   │   ├── ack_system.py        # Incident lifecycle management
+│   │   ├── prediction.py        # Firebase init & data push
+│   │   └── iot_simulation.py    # IoT sensor simulator
+│   │
+│   └── ui/                      # Streamlit UI components
+│       ├── dashboard.py         # CSS injection & header
+│       ├── controls.py          # Sidebar & source selection
+│       └── visualizations.py    # Real-time analytics widgets
+│
+├── assets/                      # Static files
+│   ├── videos/
+│   │   └── local_train.mp4
+│   └── models/
+│       └── yolov8n.pt
+│
+├── config/                      # Environment & credentials
+│   ├── .env                     # Secret keys (git-ignored)
+│   └── firebase.json            # Firebase service account key
+│
+├── data/                        # Runtime data
+│   ├── incidents.json
+│   └── logs/
+│       └── crowdsafe.log
+│
+├── docs/                        # Documentation
+│   ├── firebase_setup_guide.md
+│   ├── report/
+│   └── diagrams/
+│
+├── .gitignore
+├── requirements.txt
+├── README.md
+└── run.py                       # Convenience launcher
+```
 
 ---
 
 ## 🛠️ Technology Stack
 
-* **Dashboard**: Streamlit
-* **AI/Detection**: YOLOv8, PyTorch, OpenCV
-* **Backend & Database**: Firebase Realtime Database
-* **Alerting**: SMTP Email Integration
-* **Data Handling**: Pandas, NumPy
-* **Mobile Integration**: IP Webcam App
+| Layer | Technology |
+|---|---|
+| Dashboard | Streamlit 1.35 |
+| AI / Detection | YOLOv8, PyTorch, OpenCV |
+| Backend / DB | Firebase Realtime Database |
+| Alerting | SMTP (Gmail) |
+| Data | Pandas, NumPy |
+| Mobile | IP Webcam App |
+| Logging | Python `logging` (rotating file) |
 
 ---
 
 ## 🚀 Getting Started
 
-Follow these steps to set up and run the project on your local machine.
-
 ### Prerequisites
 
-* Python 3.9 or higher
+* Python 3.9+
 * Git
 
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/samulya896/CROWDSAFE.git](https://github.com/samulya896/CROWDSAFE.git)
+git clone https://github.com/samulya896/CROWDSAFE.git
 cd CROWDSAFE
 ```
 
 ### 2. Set Up a Virtual Environment
 
-It's highly recommended to use a virtual environment to manage project dependencies.
-
 ```bash
-# Create the virtual environment
 python -m venv venv
 
-# Activate it
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
+# Windows
 venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
-
-Install all the required Python libraries using the `requirements.txt` file.
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables
+### 4. Configure Environment
 
-This project uses a `.env` file to securely manage API keys and other secrets.
-
-**Create a file named `.env`** in the root of the project directory and paste the following content into it. You must replace the placeholder values with your actual credentials.
+Edit `config/.env` with your credentials:
 
 ```env
-# Path to your local video file
-VIDEO_PATH="local_train.mp4"
+EMAIL_SENDER=your_email@gmail.com
+EMAIL_RECEIVER=authority@email.com
+EMAIL_PASSWORD=your_app_password
 
-# Path to your Firebase credentials file
-FIREBASE_KEY_PATH="firebase-credentials.json"
+FIREBASE_KEY_PATH=config/firebase.json
+FIREBASE_DB_URL=https://your-project-id.firebaseio.com
 
-# Your Firebase Realtime Database URL
-FIREBASE_DB_URL="https://your-project-id.firebaseio.com"
-
-# Email Configuration
-EMAIL_SENDER="your_sender_email@gmail.com"
-EMAIL_PASSWORD="your_app_password"
-EMAIL_RECEIVER="authority_receiver@email.com"
-
-# General Configuration
-LOCATION_NAME="Your Location Name"
+LOCATION_NAME=Main Plaza
 ```
-**Important:** The `.gitignore` file in this repository is configured to ignore the `.env` file, so your secrets will not be committed.
 
 ### 5. Add Local Files
 
-1.  **Firebase Credentials**: Place your Firebase service account key file in the root folder and ensure its name matches the `FIREBASE_KEY_PATH` in your `.env` file (e.g., `firebase-credentials.json`).
-2.  **Video File**: Place your video file in the root folder and ensure its name matches the `VIDEO_PATH` in your `.env` file (e.g., `local_train.mp4`).
+1. Place your Firebase service-account JSON at `config/firebase.json`.
+2. Place your video file at `assets/videos/local_train.mp4`.
+3. The YOLOv8 model is already at `assets/models/yolov8n.pt`.
 
 ---
 
 ## ▶️ Usage
 
-Once all the dependencies are installed and your `.env` file is configured, run the Streamlit application from your terminal:
-
 ```bash
-streamlit run app.py
-```
+# Option 1 — Streamlit directly
+streamlit run app/main.py
 
-The application will open in a new tab in your web browser.
+# Option 2 — Convenience launcher
+python run.py
+```
 
 ---
 
 ## 📊 Data Flow
-
-The system processes data from various sources and channels it to the dashboard and alert systems via Firebase.
 
 ```text
 CCTV / Mobile Camera → YOLOv8 → People Count → Firebase
@@ -127,3 +171,9 @@ Firebase ← Real-time Updates ← Dashboard
                                  ↓
 High Crowd / Escalation → Incident Management → Email Alert
 ```
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.

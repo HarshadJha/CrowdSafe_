@@ -1,0 +1,40 @@
+# ── Byte-compiled / optimised ──
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ── Virtual environment ──
+venv/
+.venv/
+env/
+
+# ── Secrets & credentials (NEVER commit these) ──
+config/.env
+config/firebase.json
+firebase-credentials.json
+*.json
+!data/incidents.json
+!package.json
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS artefacts ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Model weights (large binary) ──
+assets/models/*.pt
+
+# ── Videos (large binary) ──
+assets/videos/*.mp4
+
+# ── Logs (generated at runtime) ──
+data/logs/
+
+# ── Streamlit cache ──
+.streamlit/
