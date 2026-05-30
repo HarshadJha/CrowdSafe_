@@ -15,7 +15,7 @@ ENTRY_POINT = Path(__file__).parent / "app" / "main.py"
 def main():
     """Launch the Streamlit application."""
     cmd = [sys.executable, "-m", "streamlit", "run", str(ENTRY_POINT)]
-    print(f"🚀 Starting CrowdSafe AI Dashboard …")
+    print(f"Starting CrowdSafe AI Dashboard …")
     print(f"   Command: {' '.join(cmd)}\n")
     subprocess.run(cmd)
 
